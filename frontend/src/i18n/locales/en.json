@@ -1,0 +1,110 @@
+{
+  "app": {
+    "title": "Auth System",
+    "tagline": "Secure sign-in for admins, group leaders and members"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "users": "Users",
+    "groups": "Groups",
+    "logout": "Log out"
+  },
+  "language": {
+    "label": "Language",
+    "en": "English",
+    "am": "Amharic"
+  },
+  "auth": {
+    "loginTitle": "Sign in to your account",
+    "registerTitle": "Create a new account",
+    "username": "Username",
+    "password": "New password",
+    "currentPassword": "Password",
+    "fullName": "Full name",
+    "loginButton": "Sign in",
+    "registerButton": "Create account",
+    "noAccount": "Don't have an account?",
+    "haveAccount": "Already have an account?",
+    "goToRegister": "Register",
+    "goToLogin": "Sign in",
+    "usernameHint": "3-50 characters, letters, numbers, . _ - only",
+    "passwordHint": "At least 6 characters",
+    "registerSuccess": "Account created. You can now sign in.",
+    "loggingIn": "Signing in...",
+    "registering": "Creating account..."
+  },
+  "roles": {
+    "admin": "Admin",
+    "group_leader": "Group Leader",
+    "user": "User"
+  },
+  "dashboard": {
+    "welcome": "Welcome, {{name}}",
+    "yourRole": "Your role",
+    "yourGroup": "Your group",
+    "noGroup": "Not assigned to a group",
+    "adminSummary": "Manage users and groups from the panels below.",
+    "userSummary": "This is your personal dashboard. An admin manages your account and group membership.",
+    "leaderSummary": "Here are the members of the group you lead."
+  },
+  "users": {
+    "title": "Users",
+    "create": "Add user",
+    "table": {
+      "username": "Username",
+      "fullName": "Full name",
+      "role": "Role",
+      "group": "Group",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "active": "Active",
+    "inactive": "Inactive",
+    "edit": "Edit",
+    "delete": "Delete",
+    "confirmDelete": "Delete this user? This cannot be undone.",
+    "noGroup": "None",
+    "form": {
+      "title": "New user",
+      "editTitle": "Edit user",
+      "role": "Role",
+      "group": "Group",
+      "noGroup": "No group",
+      "leaveBlank": "Leave blank to keep current password",
+      "save": "Save",
+      "cancel": "Cancel"
+    }
+  },
+  "groups": {
+    "title": "Groups",
+    "create": "Add group",
+    "table": {
+      "name": "Name",
+      "description": "Description",
+      "leader": "Leader",
+      "members": "Members",
+      "actions": "Actions"
+    },
+    "noLeader": "Unassigned",
+    "edit": "Edit",
+    "delete": "Delete",
+    "confirmDelete": "Delete this group? Members will be unassigned.",
+    "viewMembers": "View members",
+    "form": {
+      "title": "New group",
+      "editTitle": "Edit group",
+      "name": "Group name",
+      "description": "Description",
+      "leader": "Group leader",
+      "noLeader": "No leader yet",
+      "save": "Save",
+      "cancel": "Cancel"
+    },
+    "membersOf": "Members of {{name}}",
+    "noMembers": "No members in this group yet."
+  },
+  "errors": {
+    "generic": "Something went wrong. Please try again.",
+    "network": "Cannot reach the server. Is the backend running?"
+  }
+}

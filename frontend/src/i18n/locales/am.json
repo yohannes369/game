@@ -1,0 +1,110 @@
+{
+  "app": {
+    "title": "የማረጋገጫ ስርዓት",
+    "tagline": "ለአስተዳዳሪዎች፣ ለቡድን መሪዎች እና ለአባላት ደህንነቱ የተጠበቀ መግቢያ"
+  },
+  "nav": {
+    "dashboard": "ዳሽቦርድ",
+    "users": "ተጠቃሚዎች",
+    "groups": "ቡድኖች",
+    "logout": "ውጣ"
+  },
+  "language": {
+    "label": "ቋንቋ",
+    "en": "እንግሊዝኛ",
+    "am": "አማርኛ"
+  },
+  "auth": {
+    "loginTitle": "ወደ መለያዎ ይግቡ",
+    "registerTitle": "አዲስ መለያ ይፍጠሩ",
+    "username": "የተጠቃሚ ስም",
+    "password": "አዲስ የይለፍ ቃል",
+    "currentPassword": "የይለፍ ቃል",
+    "fullName": "ሙሉ ስም",
+    "loginButton": "ግባ",
+    "registerButton": "መለያ ፍጠር",
+    "noAccount": "መለያ የለዎትም?",
+    "haveAccount": "መለያ አለዎት?",
+    "goToRegister": "ይመዝገቡ",
+    "goToLogin": "ይግቡ",
+    "usernameHint": "ከ3-50 ፊደላት፣ ቁጥሮች፣ . _ - ብቻ",
+    "passwordHint": "ቢያንስ 6 ፊደላት",
+    "registerSuccess": "መለያ ተፈጥሯል። አሁን መግባት ይችላሉ።",
+    "loggingIn": "በመግባት ላይ...",
+    "registering": "መለያ በመፍጠር ላይ..."
+  },
+  "roles": {
+    "admin": "አስተዳዳሪ",
+    "group_leader": "የቡድን መሪ",
+    "user": "ተጠቃሚ"
+  },
+  "dashboard": {
+    "welcome": "እንኳን ደህና መጡ፣ {{name}}",
+    "yourRole": "የእርስዎ ሚና",
+    "yourGroup": "የእርስዎ ቡድን",
+    "noGroup": "ወደ ቡድን አልተመደቡም",
+    "adminSummary": "ከዚህ በታች ካሉት ፓነሎች ተጠቃሚዎችን እና ቡድኖችን ያስተዳድሩ።",
+    "userSummary": "ይህ የግል ዳሽቦርድዎ ነው። አስተዳዳሪ የእርስዎን መለያ እና የቡድን አባልነት ያስተዳድራል።",
+    "leaderSummary": "እርስዎ የሚመሩት ቡድን አባላት እነሆ።"
+  },
+  "users": {
+    "title": "ተጠቃሚዎች",
+    "create": "ተጠቃሚ ጨምር",
+    "table": {
+      "username": "የተጠቃሚ ስም",
+      "fullName": "ሙሉ ስም",
+      "role": "ሚና",
+      "group": "ቡድን",
+      "status": "ሁኔታ",
+      "actions": "ተግባሮች"
+    },
+    "active": "ንቁ",
+    "inactive": "ንቁ ያልሆነ",
+    "edit": "አርትዕ",
+    "delete": "ሰርዝ",
+    "confirmDelete": "ይህን ተጠቃሚ ይሰርዙ? ይህ ሊቀለበስ አይችልም።",
+    "noGroup": "የለም",
+    "form": {
+      "title": "አዲስ ተጠቃሚ",
+      "editTitle": "ተጠቃሚ አርትዕ",
+      "role": "ሚና",
+      "group": "ቡድን",
+      "noGroup": "ያለ ቡድን",
+      "leaveBlank": "የአሁኑን የይለፍ ቃል ለማቆየት ባዶ ይተውት",
+      "save": "አስቀምጥ",
+      "cancel": "ይቅር"
+    }
+  },
+  "groups": {
+    "title": "ቡድኖች",
+    "create": "ቡድን ጨምር",
+    "table": {
+      "name": "ስም",
+      "description": "መግለጫ",
+      "leader": "መሪ",
+      "members": "አባላት",
+      "actions": "ተግባሮች"
+    },
+    "noLeader": "ያልተመደበ",
+    "edit": "አርትዕ",
+    "delete": "ሰርዝ",
+    "confirmDelete": "ይህን ቡድን ይሰርዙ? አባላት ከቡድን ይነጠላሉ።",
+    "viewMembers": "አባላትን ይመልከቱ",
+    "form": {
+      "title": "አዲስ ቡድን",
+      "editTitle": "ቡድን አርትዕ",
+      "name": "የቡድን ስም",
+      "description": "መግለጫ",
+      "leader": "የቡድን መሪ",
+      "noLeader": "እስካሁን መሪ የለም",
+      "save": "አስቀምጥ",
+      "cancel": "ይቅር"
+    },
+    "membersOf": "የ{{name}} አባላት",
+    "noMembers": "እስካሁን በዚህ ቡድን ውስጥ አባላት የሉም።"
+  },
+  "errors": {
+    "generic": "የሆነ ስህተት ተከስቷል። እባክዎ እንደገና ይሞክሩ።",
+    "network": "አገልጋዩን ማግኘት አልተቻለም። የኋላ አገልግሎቱ እየሰራ ነው?"
+  }
+}
