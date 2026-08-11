@@ -1,44 +1,12 @@
-// const mysql = require('mysql2/promise');
-// const env = require('./env');
-
-// const pool = mysql.createPool({
-//   host: env.db.host,
-//   port: env.db.port,
-//   user: env.db.user,
-//   password: env.db.password,
-//   database: env.db.database,
-//   waitForConnections: true,
-//   connectionLimit: 10,
-//   queueLimit: 0,
-//   dateStrings: true,
-// });
-
-// async function testConnection() {
-//   const conn = await pool.getConnection();
-//   try {
-//     await conn.ping();
-//     console.log('[db] MySQL connection OK');
-//   } finally {
-//     conn.release();
-//   }
-// }
-
-// module.exports = { pool, testConnection };
 const mysql = require('mysql2/promise');
 const env = require('./env');
 
 const pool = mysql.createPool({
   host: env.db.host,
-  port: Number(env.db.port),
+  port: env.db.port,
   user: env.db.user,
   password: env.db.password,
   database: env.db.database,
-
-  // Required for Aiven MySQL
-  ssl: {
-    rejectUnauthorized: false,
-  },
-
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
@@ -46,22 +14,36 @@ const pool = mysql.createPool({
 });
 
 async function testConnection() {
-  let conn;
-
+  const conn = await pool.getConnection();
   try {
-    conn = await pool.getConnection();
     await conn.ping();
-    console.log('✅ MySQL connection successful');
-  } catch (error) {
-    console.error('❌ MySQL connection failed');
-    console.error(error);
-    throw error;
+    console.log('[db] MySQL connection OK');
   } finally {
-    if (conn) conn.release();
+    conn.release();
   }
 }
 
-module.exports = {
-  pool,
-  testConnection,
-};
+/**
+ * Runs `callback(conn)` inside a single MySQL transaction, committing on
+ * success and rolling back on any thrown error. Used by the lottery modules
+ * for payment approval, the draw, and payouts, so a failure partway through
+ * never leaves tickets/records half-written.
+ *
+ * Usage: await withTransaction(async (conn) => { await conn.query(...); });
+ */
+async function withTransaction(callback) {
+  const conn = await pool.getConnection();
+  try {
+    await conn.beginTransaction();
+    const result = await callback(conn);
+    await conn.commit();
+    return result;
+  } catch (err) {
+    await conn.rollback();
+    throw err;
+  } finally {
+    conn.release();
+  }
+}
+
+module.exports = { pool, testConnection, withTransaction };

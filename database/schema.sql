@@ -14,24 +14,30 @@ CREATE TABLE IF NOT EXISTS `groups` (
   leader_id INT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
-
-
 -- Users table
 CREATE TABLE IF NOT EXISTS users (
   id INT AUTO_INCREMENT PRIMARY KEY,
   username VARCHAR(50) NOT NULL UNIQUE,
   password_hash VARCHAR(255) NOT NULL,
   full_name VARCHAR(150) NOT NULL,
+
+  phone_number VARCHAR(20) NOT NULL UNIQUE,
+  location VARCHAR(150) NULL,
+
   role ENUM('admin', 'group_leader', 'user') NOT NULL DEFAULT 'user',
   group_id INT NULL,
+  is_age_verified TINYINT(1) NOT NULL DEFAULT 0,
+  agreed_to_terms TINYINT(1) NOT NULL DEFAULT 0,
+  self_exclusion_until DATETIME NULL,
   is_active TINYINT(1) NOT NULL DEFAULT 1,
+
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+
   CONSTRAINT fk_users_group 
     FOREIGN KEY (group_id) REFERENCES `groups`(id) 
     ON DELETE SET NULL
 ) ENGINE=InnoDB;
-
 
 -- Add group leader relation
 ALTER TABLE `groups`
@@ -53,9 +59,4 @@ CREATE TABLE IF NOT EXISTS refresh_tokens (
 ) ENGINE=InnoDB;
 
 
--- Indexes
-CREATE INDEX idx_refresh_tokens_user 
-ON refresh_tokens(user_id);
-
-CREATE INDEX idx_users_group 
-ON users(group_id);
+s

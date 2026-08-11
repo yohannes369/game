@@ -7,7 +7,12 @@
     "dashboard": "ዳሽቦርድ",
     "users": "ተጠቃሚዎች",
     "groups": "ቡድኖች",
-    "logout": "ውጣ"
+    "logout": "ውጣ",
+    "lotteries": "ሎተሪዎች",
+    "winners": "አሸናፊዎች",
+    "withdrawals": "ክፍያ ወጪዎች",
+    "payments": "ክፍያዎች",
+    "analytics": "ትንተና"
   },
   "language": {
     "label": "ቋንቋ",
@@ -106,5 +111,130 @@
   "errors": {
     "generic": "የሆነ ስህተት ተከስቷል። እባክዎ እንደገና ይሞክሩ።",
     "network": "አገልጋዩን ማግኘት አልተቻለም። የኋላ አገልግሎቱ እየሰራ ነው?"
+  },
+  "common": {
+    "loading": "በመጫን ላይ...",
+    "saving": "በማስቀመጥ ላይ...",
+    "search": "ፍለጋ"
+  },
+  "status": {
+    "draft": "ረቂቅ",
+    "active": "ንቁ",
+    "locked": "ተቆልፏል",
+    "completed": "ተጠናቅቋል",
+    "pending": "በመጠባበቅ ላይ",
+    "approved": "ጸድቋል",
+    "rejected": "ውድቅ ተደርጓል",
+    "paid": "ተከፍሏል",
+    "unrequested": "አልተጠየቀም"
+  },
+  "lottery": {
+    "title": "ሎተሪዎች",
+    "create": "ሎተሪ ፍጠር",
+    "manage": "ሎተሪ አስተዳድር",
+    "empty": "እስካሁን ምንም ሎተሪ የለም።",
+    "ticketPrice": "የትኬት ዋጋ",
+    "ticketsSold": "የተሸጡ ትኬቶች",
+    "myTickets": "የኔ ትኬቶች",
+    "myOdds": "የኔ እድል",
+    "spinAt": "የዕጣ ጊዜ",
+    "countdownTo": "እስከ ዕጣ ድረስ ያለ ጊዜ",
+    "drawPending": "ዕጣው በቅርቡ ይጀምራል።",
+    "drawNow": "አሁን አውጣ",
+    "confirmDraw": "ለዚህ ሎተሪ አሁን ዕጣ ማውጣት ይፈልጋሉ?",
+    "prizes": "ሽልማቶች",
+    "prizeTier": "ደረጃ",
+    "prizeName": "ሽልማት",
+    "tickets": "ትኬቶች",
+    "d": "ቀ",
+    "h": "ሰ",
+    "m": "ደ",
+    "s": "ሴ",
+    "ticketMode": {
+      "fixed": "ቋሚ ዋጋ",
+      "package": "ጥቅሎች",
+      "custom": "ማንኛውም መጠን"
+    },
+    "form": {
+      "title": "ርዕስ",
+      "description": "መግለጫ",
+      "ticketMode": "የትኬት ዓይነት",
+      "ticketModeHint": "ቋሚ፦ የትኬቱን ዋጋ ትክክለኛ ብዜት ይክፈሉ። ጥቅል፦ ገዢዎች ጥቅል ይመርጣሉ። ማንኛውም፦ ማንኛውም መጠን፣ ትኬቶች ወደ ታች ይጠጋጋሉ።",
+      "ticketPrice": "የትኬት ዋጋ",
+      "spinAt": "የዕጣ ቀን እና ሰዓት",
+      "save": "አስቀምጥ",
+      "addPackage": "ጥቅል ጨምር",
+      "packageName": "የጥቅል ስም",
+      "packagePrice": "ዋጋ",
+      "packageTickets": "የተካተቱ ትኬቶች"
+    }
+  },
+  "payments": {
+    "buyTickets": "ትኬት ግዛ",
+    "amount": "መጠን",
+    "method": "የክፍያ ዘዴ",
+    "methods": {
+      "telebirr": "ቴሌብር",
+      "cbe_birr": "ሲቢኢ ብር",
+      "bank_transfer": "የባንክ ዝውውር",
+      "other": "ሌላ"
+    },
+    "transactionId": "የግብይት መለያ",
+    "screenshot": "የክፍያ ስክሪንሾት",
+    "total": "ጠቅላላ",
+    "submit": "ክፍያ አስገባ",
+    "submitSuccess": "ክፍያው ገብቷል። አስተዳዳሪ በቅርቡ ይገመግመዋል።",
+    "ticketsPreview": "≈ {{count}} ትኬት(ቶች) በአሁኑ የትኬት ዋጋ",
+    "pendingTitle": "በመጠባበቅ ላይ ያሉ ክፍያዎች",
+    "empty": "በመጠባበቅ ላይ ያለ ክፍያ የለም።",
+    "view": "ይመልከቱ",
+    "approve": "አጽድቅ",
+    "reject": "ውድቅ አድርግ",
+    "rejectReason": "የመቀበል ያለመቻል ምክንያት",
+    "table": {
+      "user": "ተጠቃሚ",
+      "lottery": "ሎተሪ",
+      "amount": "መጠን",
+      "method": "ዘዴ",
+      "transactionId": "የግብይት መለያ",
+      "screenshot": "ስክሪንሾት"
+    }
+  },
+  "winners": {
+    "title": "አሸናፊዎች",
+    "publicTab": "የህዝብ አሸናፊዎች",
+    "mineTab": "የኔ ድሎች",
+    "empty": "እስካሁን አሸናፊ የለም።",
+    "winner": "አሸናፊ",
+    "anonymous": "ስም-አልባ"
+  },
+  "withdrawals": {
+    "title": "ክፍያ ወጪዎች",
+    "myTab": "የኔ ጥያቄዎች",
+    "queueTab": "የክፍያ ወረፋ",
+    "status": "ሁኔታ",
+    "request": "ክፍያ ጠይቅ",
+    "noWins": "እስካሁን ሽልማት አላሸነፉም።",
+    "empty": "በመጠባበቅ ላይ ያለ የክፍያ ጥያቄ የለም።",
+    "markPaid": "እንደተከፈለ ምልክት አድርግ"
+  },
+  "notifications": {
+    "title": "ማሳወቂያዎች",
+    "empty": "ምንም ማሳወቂያ የለም።",
+    "unreadOnly": "ያልተነበቡ ብቻ",
+    "viewAll": "ሁሉንም ማሳወቂያዎች ይመልከቱ"
+  },
+  "analytics": {
+    "title": "የአስተዳዳሪ ትንተና",
+    "maxValue": "ከፍተኛ",
+    "daily": "ዕለታዊ",
+    "monthly": "ወርሃዊ",
+    "settings": "ቅንብሮች",
+    "settingKey": "የቅንብር ቁልፍ",
+    "settingValue": "ዋጋ (JSON)",
+    "loadSetting": "ጫን",
+    "saveSetting": "አስቀምጥ",
+    "settingsSaved": "ቅንብር ተቀምጧል።",
+    "totals": {}
   }
 }

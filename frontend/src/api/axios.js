@@ -64,6 +64,12 @@ const baseURL =
 const api = axios.create({
   baseURL,
   withCredentials: true,
+  // Without a timeout, a request to a dead/unreachable backend (server down,
+  // asleep on a free host, wrong VITE_API_URL, silently-dropped CORS
+  // preflight) hangs forever with no console error and the UI spins
+  // indefinitely. This turns that into a normal rejected promise after 15s
+  // so callers' catch blocks (and loading states) actually resolve.
+  timeout: 15000,
 });
 
 // Add access token automatically

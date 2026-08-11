@@ -7,7 +7,12 @@
     "dashboard": "Dashboard",
     "users": "Users",
     "groups": "Groups",
-    "logout": "Log out"
+    "logout": "Log out",
+    "lotteries": "Lotteries",
+    "winners": "Winners",
+    "withdrawals": "Withdrawals",
+    "payments": "Payments",
+    "analytics": "Analytics"
   },
   "language": {
     "label": "Language",
@@ -106,5 +111,130 @@
   "errors": {
     "generic": "Something went wrong. Please try again.",
     "network": "Cannot reach the server. Is the backend running?"
+  },
+  "common": {
+    "loading": "Loading...",
+    "saving": "Saving...",
+    "search": "Search"
+  },
+  "status": {
+    "draft": "Draft",
+    "active": "Active",
+    "locked": "Locked",
+    "completed": "Completed",
+    "pending": "Pending",
+    "approved": "Approved",
+    "rejected": "Rejected",
+    "paid": "Paid",
+    "unrequested": "Not requested"
+  },
+  "lottery": {
+    "title": "Lotteries",
+    "create": "Create lottery",
+    "manage": "Manage lottery",
+    "empty": "No lotteries yet.",
+    "ticketPrice": "Ticket price",
+    "ticketsSold": "Tickets sold",
+    "myTickets": "My tickets",
+    "myOdds": "My odds",
+    "spinAt": "Draw time",
+    "countdownTo": "Time until the draw",
+    "drawPending": "Draw is starting soon.",
+    "drawNow": "Draw now",
+    "confirmDraw": "Trigger the draw for this lottery now?",
+    "prizes": "Prizes",
+    "prizeTier": "Tier",
+    "prizeName": "Prize",
+    "tickets": "tickets",
+    "d": "d",
+    "h": "h",
+    "m": "m",
+    "s": "s",
+    "ticketMode": {
+      "fixed": "Fixed price",
+      "package": "Packages",
+      "custom": "Custom amount"
+    },
+    "form": {
+      "title": "Title",
+      "description": "Description",
+      "ticketMode": "Ticket mode",
+      "ticketModeHint": "Fixed: pay an exact multiple of the ticket price. Package: buyers pick a package. Custom: any amount, tickets are rounded down.",
+      "ticketPrice": "Ticket price",
+      "spinAt": "Draw date & time",
+      "save": "Save",
+      "addPackage": "Add a package",
+      "packageName": "Package name",
+      "packagePrice": "Price",
+      "packageTickets": "Tickets included"
+    }
+  },
+  "payments": {
+    "buyTickets": "Buy tickets",
+    "amount": "Amount",
+    "method": "Payment method",
+    "methods": {
+      "telebirr": "Telebirr",
+      "cbe_birr": "CBE Birr",
+      "bank_transfer": "Bank transfer",
+      "other": "Other"
+    },
+    "transactionId": "Transaction ID",
+    "screenshot": "Payment screenshot",
+    "total": "Total",
+    "submit": "Submit payment",
+    "submitSuccess": "Payment submitted. An admin will review it shortly.",
+    "ticketsPreview": "≈ {{count}} ticket(s) at the current ticket price",
+    "pendingTitle": "Pending payments",
+    "empty": "No pending payments.",
+    "view": "View",
+    "approve": "Approve",
+    "reject": "Reject",
+    "rejectReason": "Reason for rejection",
+    "table": {
+      "user": "User",
+      "lottery": "Lottery",
+      "amount": "Amount",
+      "method": "Method",
+      "transactionId": "Transaction ID",
+      "screenshot": "Screenshot"
+    }
+  },
+  "winners": {
+    "title": "Winners",
+    "publicTab": "Public winners",
+    "mineTab": "My wins",
+    "empty": "No winners yet.",
+    "winner": "Winner",
+    "anonymous": "Anonymous"
+  },
+  "withdrawals": {
+    "title": "Withdrawals",
+    "myTab": "My requests",
+    "queueTab": "Payout queue",
+    "status": "Status",
+    "request": "Request payout",
+    "noWins": "You haven't won a prize yet.",
+    "empty": "No pending payout requests.",
+    "markPaid": "Mark as paid"
+  },
+  "notifications": {
+    "title": "Notifications",
+    "empty": "No notifications.",
+    "unreadOnly": "Unread only",
+    "viewAll": "View all notifications"
+  },
+  "analytics": {
+    "title": "Admin analytics",
+    "maxValue": "Peak",
+    "daily": "Daily",
+    "monthly": "Monthly",
+    "settings": "Settings",
+    "settingKey": "Setting key",
+    "settingValue": "Value (JSON)",
+    "loadSetting": "Load",
+    "saveSetting": "Save",
+    "settingsSaved": "Setting saved.",
+    "totals": {}
   }
 }

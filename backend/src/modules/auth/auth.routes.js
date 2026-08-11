@@ -1,3 +1,5 @@
+
+
 const express = require('express');
 const { body } = require('express-validator');
 const rateLimit = require('express-rate-limit');
@@ -28,14 +30,65 @@ const passwordRule = body('password')
 
 router.post(
   '/register',
-  [usernameRule, passwordRule, body('fullName').trim().notEmpty().withMessage('Full name is required.')],
+  [
+    usernameRule,
+    passwordRule,
+
+    body('fullName')
+      .trim()
+      .notEmpty()
+      .withMessage('Full name is required.'),
+
+    body('location')
+      .optional()
+      .trim()
+      .isLength({ max: 150 })
+      .withMessage('Location cannot exceed 150 characters.')
+  ],
   controller.register
 );
 
-router.post('/login', loginLimiter, [usernameRule, body('password').notEmpty().withMessage('Password is required.')], controller.login);
+
+router.post(
+  '/login',
+  loginLimiter,
+  [
+    usernameRule,
+    body('password')
+      .notEmpty()
+      .withMessage('Password is required.')
+  ],
+  controller.login
+);
+
 
 router.post('/refresh', controller.refresh);
+
 router.post('/logout', controller.logout);
-router.get('/me', authenticate, controller.me);
+
+
+router.get(
+  '/me',
+  authenticate,
+  controller.me
+);
+
+
+// Change password (logged-in user)
+router.post(
+  '/change-password',
+  authenticate,
+  [
+    body('currentPassword')
+      .notEmpty()
+      .withMessage('Current password is required.'),
+
+    body('newPassword')
+      .isLength({ min: 6 })
+      .withMessage('New password must be at least 6 characters long.')
+  ],
+  controller.changePassword
+);
+
 
 module.exports = router;
