@@ -9,7 +9,7 @@ function required(name, fallback) {
 }
 
 module.exports = {
-  port: process.env.PORT || 5000,
+  port: process.env.PORT || 5001,
   nodeEnv: process.env.NODE_ENV || 'development',
   clientOrigin: process.env.CLIENT_ORIGIN || 'http://localhost:5173',
 
