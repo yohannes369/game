@@ -325,7 +325,7 @@ import Notifications      from './pages/notification/Notifications';
 
 // Admin
 import Analytics          from './pages/admin/Analytics';
-import PaidUsers          from './pages/admin/Paidusers';
+// import PaidUsers          from './pages/admin/Paidusers';
 import ChallengeAdminReview   from './pages/admin/ChallengeAdminReview';
 import ChallengeFinanceReport from './pages/admin/ChallengeFinanceReport';
 import Chat                from './pages/chat';
@@ -384,7 +384,7 @@ function AppRoutes() {
         <Route path="/admin/challenges/review"          element={<PrivateRoute roles={['admin']}><ChallengeAdminReview /></PrivateRoute>} />
         <Route path="/admin/challenges/finance-report"  element={<PrivateRoute roles={['admin', 'finance_admin']}><ChallengeFinanceReport /></PrivateRoute>} />
         <Route path="/admin/analytics"                  element={<PrivateRoute roles={['admin']}><Analytics /></PrivateRoute>} />
-        <Route path="/admin/paid-users"                 element={<PrivateRoute roles={['admin']}><PaidUsers /></PrivateRoute>} />
+        {/* <Route path="/admin/paid-users"                 element={<PrivateRoute roles={['admin']}><PaidUsers /></PrivateRoute>} /> */}
 
         {/* Fallbacks */}
         <Route path="/"  element={<Navigate to="/dashboard" replace />} />
