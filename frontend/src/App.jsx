@@ -325,7 +325,7 @@ import Notifications      from './pages/notification/Notifications';
 
 // Admin
 import Analytics          from './pages/admin/Analytics';
-import PaidUsers          from './pages/admin/PaidUsers';
+import PaidUsers          from './pages/admin/Paidusers';
 import ChallengeAdminReview   from './pages/admin/ChallengeAdminReview';
 import ChallengeFinanceReport from './pages/admin/ChallengeFinanceReport';
 import Chat                from './pages/chat';
