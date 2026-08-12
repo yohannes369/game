@@ -1,5 +1,4 @@
 
-
 // const { validationResult } = require('express-validator');
 // const challengeService = require('./challenge.service');
 // const settingsService = require('./settings.service');
@@ -110,7 +109,7 @@
 //   }
 // }
 
-// // Admin: finalize (approve) a challenge (alias expected by frontend)
+// // Admin: finalize (approve) a challenge
 // async function approveChallenge(req, res, next) {
 //   try {
 //     const challenge = await challengeService.markAdminReview(req.params.challengeId, req.user.id, true);
@@ -120,7 +119,7 @@
 //   }
 // }
 
-// // Admin: reject challenge entirely (alias expected by frontend)
+// // Admin: reject challenge entirely
 // async function rejectChallenge(req, res, next) {
 //   try {
 //     const reason = req.body.reason || null;
@@ -180,8 +179,37 @@
 
 // async function listAdminReview(req, res, next) {
 //   try {
-//     const challenges = await challengeService.listAdminReviewChallenges();
-//     res.json({ challenges: challenges || [] });
+//     const includeSinglePaid = req.query.includeSinglePaid !== 'false';
+//     const challenges = await challengeService.listAdminReviewChallenges({ includeSinglePaid });
+
+//     const rawList = Array.isArray(challenges) ? challenges : [];
+
+//     // Filter matching both normalized database fields and legacy alias fields
+//     const filtered = rawList.filter((c) => {
+//       const creatorPaid = Boolean(
+//         c.paymentReferenceCreator ||
+//         c.creatorPaymentRef ||
+//         c.paymentStatusCreator === 'submitted' ||
+//         c.creatorPaymentStatus === 'submitted' ||
+//         c.creatorPaid
+//       );
+//       const challengerPaid = Boolean(
+//         c.paymentReferenceChallenger ||
+//         c.acceptorPaymentRef ||
+//         c.paymentStatusChallenger === 'submitted' ||
+//         c.acceptorPaymentStatus === 'submitted' ||
+//         c.acceptorPaid
+//       );
+
+//       // Keep if at least one player has submitted payment or if challenge status implies active review
+//       return (
+//         creatorPaid ||
+//         challengerPaid ||
+//         ['ADMIN_REVIEW', 'WINNER_REQUESTED_PAYOUT', 'PAYOUT_REVIEW'].includes(c.status)
+//       );
+//     });
+
+//     res.json({ challenges: filtered });
 //   } catch (err) {
 //     next(err);
 //   }
@@ -318,7 +346,12 @@ async function submitPayment(req, res, next) {
 async function reviewAdmin(req, res, next) {
   try {
     checkValidation(req);
-    const challenge = await challengeService.markAdminReview(req.params.challengeId, req.user.id, req.body.approved);
+    const challenge = await challengeService.markAdminReview(
+      req.params.challengeId,
+      req.user.id,
+      req.body.approved,
+      req.body.reason || null
+    );
     res.json({ message: 'Challenge review completed.', challenge });
   } catch (err) {
     next(err);
@@ -328,11 +361,14 @@ async function reviewAdmin(req, res, next) {
 // Admin: approve/reject a single player's payment side
 async function paymentReview(req, res, next) {
   try {
+    // Support both route param (/admin/payment/:side) and body field
     const side = req.params.side || req.body.side;
     const { approved, reason } = req.body;
+
     if (!side || typeof approved === 'undefined') {
       return res.status(422).json({ message: 'side and approved are required.' });
     }
+
     const result = await challengeService.approvePlayerPayment(
       req.params.challengeId,
       req.user.id,
@@ -346,7 +382,7 @@ async function paymentReview(req, res, next) {
   }
 }
 
-// Admin: finalize (approve) a challenge (alias expected by frontend)
+// Admin: finalize (approve) a challenge — both sides must already be APPROVED
 async function approveChallenge(req, res, next) {
   try {
     const challenge = await challengeService.markAdminReview(req.params.challengeId, req.user.id, true);
@@ -356,7 +392,7 @@ async function approveChallenge(req, res, next) {
   }
 }
 
-// Admin: reject challenge entirely (alias expected by frontend)
+// Admin: reject challenge entirely
 async function rejectChallenge(req, res, next) {
   try {
     const reason = req.body.reason || null;
@@ -414,19 +450,37 @@ async function processPayout(req, res, next) {
   }
 }
 
-// Updated: Admin can retrieve challenges where at least one side (or any filter) has paid
 async function listAdminReview(req, res, next) {
   try {
-    // Optional query parameters passed from frontend: e.g., ?includeSinglePaid=true
-    const includeSinglePaid = req.query.includeSinglePaid !== 'false'; 
-    const challenges = await challengeService.listAdminReviewChallenges({ includeSinglePaid });
+    const challenges = await challengeService.listAdminReviewChallenges();
 
-    // Fallback filter in controller if the service returns all challenges:
-    // Ensures any challenge where creator OR acceptor has submitted payment is visible
-    const filtered = (challenges || []).filter((c) => {
-      const creatorPaid = Boolean(c.creatorPaymentRef || c.creatorPaymentStatus === 'submitted' || c.creatorPaid);
-      const acceptorPaid = Boolean(c.acceptorPaymentRef || c.acceptorPaymentStatus === 'submitted' || c.acceptorPaid);
-      return creatorPaid || acceptorPaid;
+    const rawList = Array.isArray(challenges) ? challenges : [];
+
+    // Filter: include challenges where at least one player has submitted payment
+    // or where the challenge status explicitly calls for admin action
+    const filtered = rawList.filter((c) => {
+      const creatorPaid = Boolean(
+        c.paymentReferenceCreator ||
+        c.creatorPaymentRef ||
+        c.paymentStatusCreator === 'SUBMITTED' ||
+        c.paymentStatusCreator === 'submitted' ||
+        c.creatorPaymentStatus === 'submitted' ||
+        c.creatorPaid
+      );
+      const challengerPaid = Boolean(
+        c.paymentReferenceChallenger ||
+        c.acceptorPaymentRef ||
+        c.paymentStatusChallenger === 'SUBMITTED' ||
+        c.paymentStatusChallenger === 'submitted' ||
+        c.acceptorPaymentStatus === 'submitted' ||
+        c.acceptorPaid
+      );
+
+      return (
+        creatorPaid ||
+        challengerPaid ||
+        ['ADMIN_REVIEW', 'WINNER_REQUESTED_PAYOUT', 'PAYOUT_REVIEW'].includes(c.status)
+      );
     });
 
     res.json({ challenges: filtered });
