@@ -1,0 +1,51 @@
+services:
+  - type: web
+    name: game-backend
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    healthCheckInterval: 30
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: DB_HOST
+        fromDatabase:
+          name: mysql-db
+          property: host
+      - key: DB_PORT
+        fromDatabase:
+          name: mysql-db
+          property: port
+      - key: DB_USER
+        fromDatabase:
+          name: mysql-db
+          property: username
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: mysql-db
+          property: password
+      - key: DB_NAME
+        value: game
+
+  - type: web
+    name: game-frontend
+    env: static
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: frontend/dist
+    routes:
+      - path: /
+        destination: /
+      - path: /api/*
+        destination: game-backend:/api/*
+    envVars:
+      - key: VITE_API_URL
+        value: https://game-backend.onrender.com
+
+databases:
+  - name: mysql-db
+    databaseName: game
+    plan: free
+    region: oregon

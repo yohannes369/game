@@ -1,9 +1,8 @@
-// import { useCallback, useEffect, useState } from 'react';
-// import { useTranslation } from 'react-i18next';
-// import api from '../../api/axios';
+function PaidUsers() {
+  return <div>Paid Users</div>;
+}
 
-// export default function PaidUsers() {
-//   const { t } = useTranslation();
+export default PaidUsers;
 
 //   // ============================================================
 //   // STATE
