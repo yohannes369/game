@@ -59,7 +59,7 @@ async function initializeDatabase() {
     let successCount = 0;
     for (const statement of statements) {
       try {
-        await connection.execute(statement);
+        await connection.query(statement);
         successCount++;
       } catch (err) {
         // Silently ignore "already exists" errors
@@ -84,7 +84,7 @@ async function initializeDatabase() {
       let lotterySuccessCount = 0;
       for (const statement of lotteryStatements) {
         try {
-          await connection.execute(statement);
+          await connection.query(statement);
           lotterySuccessCount++;
         } catch (err) {
           if (!err.message.includes('already exists') && !err.message.includes('Duplicate')) {
@@ -113,7 +113,7 @@ async function initializeDatabase() {
 
         for (const statement of migrationStatements) {
           try {
-            await connection.execute(statement);
+            await connection.query(statement);
           } catch (err) {
             if (!err.message.includes('already exists') && !err.message.includes('Duplicate')) {
               console.error(`[db-init] Error in ${file}:`, err.message.substring(0, 100));
