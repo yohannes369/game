@@ -48,12 +48,25 @@ async function initializeDatabase() {
     }
 
     const schema = fs.readFileSync(schemaPath, 'utf-8');
-    const statements = schema
+    // Remove all comment lines (-- and /* */ blocks)
+    const cleaned = schema
+      .split('\n')
+      .filter(line => !line.trim().startsWith('--') && !line.trim().startsWith('/*') && !line.trim().startsWith('*/') && !line.trim().startsWith('/*!'))
+      .join('\n');
+    
+    const statements = cleaned
       .split(';')
       .map(s => s.trim())
-      .filter(s => s.length > 0 && !s.startsWith('--'))
-      // Filter out statements that don't work with prepared statements
-      .filter(s => !s.toUpperCase().startsWith('CREATE DATABASE') && !s.toUpperCase().startsWith('USE '));
+      .filter(s => s.length > 0)
+      // Filter out MySQL pragma statements that don't work in this context
+      .filter(s => {
+        const upper = s.toUpperCase();
+        return !upper.startsWith('CREATE DATABASE') 
+          && !upper.startsWith('USE ') 
+          && !upper.startsWith('SET ') 
+          && !upper.startsWith('START TRANSACTION')
+          && !upper.startsWith('COMMIT');
+      });
 
     console.log(`[db-init] Executing ${statements.length} statements from schema.sql`);
     let successCount = 0;
@@ -74,11 +87,24 @@ async function initializeDatabase() {
     const lotterySchemaPath = path.join(__dirname, '../../database/lottery_schema.sql');
     if (fs.existsSync(lotterySchemaPath)) {
       const lotterySchema = fs.readFileSync(lotterySchemaPath, 'utf-8');
-      const lotteryStatements = lotterySchema
+      // Remove all comment lines
+      const lotteryClean = lotterySchema
+        .split('\n')
+        .filter(line => !line.trim().startsWith('--') && !line.trim().startsWith('/*') && !line.trim().startsWith('*/') && !line.trim().startsWith('/*!'))
+        .join('\n');
+      
+      const lotteryStatements = lotteryClean
         .split(';')
         .map(s => s.trim())
-        .filter(s => s.length > 0 && !s.startsWith('--'))
-        .filter(s => !s.toUpperCase().startsWith('CREATE DATABASE') && !s.toUpperCase().startsWith('USE '));
+        .filter(s => s.length > 0)
+        .filter(s => {
+          const upper = s.toUpperCase();
+          return !upper.startsWith('CREATE DATABASE') 
+            && !upper.startsWith('USE ') 
+            && !upper.startsWith('SET ') 
+            && !upper.startsWith('START TRANSACTION')
+            && !upper.startsWith('COMMIT');
+        });
 
       console.log(`[db-init] Executing ${lotteryStatements.length} statements from lottery_schema.sql`);
       let lotterySuccessCount = 0;
@@ -105,11 +131,24 @@ async function initializeDatabase() {
       for (const file of migrationFiles) {
         const filePath = path.join(migrationsPath, file);
         const migration = fs.readFileSync(filePath, 'utf-8');
-        const migrationStatements = migration
+        // Remove all comment lines
+        const migrationClean = migration
+          .split('\n')
+          .filter(line => !line.trim().startsWith('--') && !line.trim().startsWith('/*') && !line.trim().startsWith('*/') && !line.trim().startsWith('/*!'))
+          .join('\n');
+        
+        const migrationStatements = migrationClean
           .split(';')
           .map(s => s.trim())
-          .filter(s => s.length > 0 && !s.startsWith('--'))
-          .filter(s => !s.toUpperCase().startsWith('CREATE DATABASE') && !s.toUpperCase().startsWith('USE '));
+          .filter(s => s.length > 0)
+          .filter(s => {
+            const upper = s.toUpperCase();
+            return !upper.startsWith('CREATE DATABASE') 
+              && !upper.startsWith('USE ') 
+              && !upper.startsWith('SET ') 
+              && !upper.startsWith('START TRANSACTION')
+              && !upper.startsWith('COMMIT');
+          });
 
         for (const statement of migrationStatements) {
           try {
