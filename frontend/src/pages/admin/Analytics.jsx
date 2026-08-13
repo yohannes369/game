@@ -4,54 +4,26 @@ import api from '../../api/axios';
 
 function BarChart({ title, data, labelKey, valueKey }) {
   const { t } = useTranslation();
-
-  if (!data || data.length === 0) {
-    return null;
-  }
-
-  const values = data.map(
-    (item) => Number(item[valueKey]) || 0
-  );
-
-  const max = Math.max(...values, 1);
+  if (!data || data.length === 0) return null;
+  const max = Math.max(...data.map((d) => Number(d[valueKey]) || 0), 1);
 
   return (
     <div className="card">
       <h3>{title}</h3>
-
       <div className="bar-chart">
-        {data.map((item, index) => {
-          const value = Number(item[valueKey]) || 0;
-
-          return (
+        {data.map((d, i) => (
+          <div className="bar-col" key={i}>
             <div
-              className="bar-col"
-              key={`${item[labelKey]}-${index}`}
-            >
-              <div
-                className="bar"
-                style={{
-                  height: `${(value / max) * 100}%`,
-                }}
-                title={String(value)}
-              />
-
-              <span className="bar-label">
-                {item[labelKey]}
-              </span>
-            </div>
-          );
-        })}
+              className="bar"
+              style={{ height: `${(Number(d[valueKey]) / max) * 100}%` }}
+              title={String(d[valueKey])}
+            />
+            <span className="bar-label">{d[labelKey]}</span>
+          </div>
+        ))}
       </div>
-
-      <p
-        className="muted"
-        style={{
-          marginTop: '0.5rem',
-          marginBottom: 0,
-        }}
-      >
-        {t('analytics.maxValue', 'Maximum value')}: {max}
+      <p className="muted" style={{ marginTop: '0.5rem', marginBottom: 0 }}>
+        {t('analytics.maxValue')}: {max}
       </p>
     </div>
   );
@@ -59,7 +31,6 @@ function BarChart({ title, data, labelKey, valueKey }) {
 
 function SettingsEditor() {
   const { t } = useTranslation();
-
   const [key, setKey] = useState('referral_enabled');
   const [value, setValue] = useState('');
   const [error, setError] = useState('');
@@ -67,100 +38,35 @@ function SettingsEditor() {
   const [busy, setBusy] = useState(false);
 
   async function load() {
-    if (!key.trim()) {
-      setError(
-        t(
-          'analytics.settingKeyRequired',
-          'Setting key is required.'
-        )
-      );
-      return;
-    }
-
     setError('');
     setSuccess('');
     setBusy(true);
-
     try {
-      const { data } = await api.get(
-        `/admin/settings/${key.trim()}`
-      );
-
-      const settingValue =
-        data?.value ??
-        data?.setting ??
-        data;
-
-      setValue(
-        typeof settingValue === 'string'
-          ? settingValue
-          : JSON.stringify(
-              settingValue,
-              null,
-              2
-            )
-      );
+      const { data } = await api.get(`/admin/settings/${key}`);
+      setValue(JSON.stringify(data.value ?? data.setting ?? data, null, 2));
     } catch (err) {
-      setError(
-        err.response?.data?.message ||
-          t(
-            'errors.generic',
-            'Something went wrong.'
-          )
-      );
+      setError(err.response?.data?.message || t('errors.generic'));
     } finally {
       setBusy(false);
     }
   }
 
-  async function save(event) {
-    event.preventDefault();
-
-    if (!key.trim()) {
-      setError(
-        t(
-          'analytics.settingKeyRequired',
-          'Setting key is required.'
-        )
-      );
-      return;
-    }
-
+  async function save(e) {
+    e.preventDefault();
     setError('');
     setSuccess('');
     setBusy(true);
-
     try {
-      let parsedValue = value;
-
+      let parsed = value;
       try {
-        parsedValue = JSON.parse(value);
+        parsed = JSON.parse(value);
       } catch {
-        // Keep the value as a normal string
-        // when it is not valid JSON.
+        // keep as raw string if not valid JSON
       }
-
-      await api.put(
-        `/admin/settings/${key.trim()}`,
-        {
-          value: parsedValue,
-        }
-      );
-
-      setSuccess(
-        t(
-          'analytics.settingsSaved',
-          'Setting saved successfully.'
-        )
-      );
+      await api.put(`/admin/settings/${key}`, { value: parsed });
+      setSuccess(t('analytics.settingsSaved'));
     } catch (err) {
-      setError(
-        err.response?.data?.message ||
-          t(
-            'errors.generic',
-            'Something went wrong.'
-          )
-      );
+      setError(err.response?.data?.message || t('errors.generic'));
     } finally {
       setBusy(false);
     }
@@ -168,113 +74,31 @@ function SettingsEditor() {
 
   return (
     <div className="card">
-      <h3>
-        {t(
-          'analytics.settings',
-          'Settings'
-        )}
-      </h3>
-
-      {error && (
-        <div className="alert alert-error">
-          {error}
-        </div>
-      )}
-
-      {success && (
-        <div className="alert alert-success">
-          {success}
-        </div>
-      )}
-
-      <form
-        onSubmit={save}
-        className="form"
-      >
-        {/* Setting Key */}
+      <h3>{t('analytics.settings')}</h3>
+      {error && <div className="alert alert-error">{error}</div>}
+      {success && <div className="alert alert-success">{success}</div>}
+      <form onSubmit={save} className="form">
         <label className="field">
-          <span>
-            {t(
-              'analytics.settingKey',
-              'Setting Key'
-            )}
-          </span>
-
+          <span>{t('analytics.settingKey')}</span>
           <div className="actions">
-            <input
-              type="text"
-              value={key}
-              onChange={(event) =>
-                setKey(event.target.value)
-              }
-              placeholder="referral_enabled"
-              disabled={busy}
-            />
-
-            <button
-              type="button"
-              className="btn btn-ghost btn-sm"
-              onClick={load}
-              disabled={busy}
-            >
-              {busy
-                ? t(
-                    'common.loading',
-                    'Loading...'
-                  )
-                : t(
-                    'analytics.loadSetting',
-                    'Load Setting'
-                  )}
+            <input value={key} onChange={(e) => setKey(e.target.value)} />
+            <button type="button" className="btn btn-ghost btn-sm" onClick={load} disabled={busy}>
+              {t('analytics.loadSetting')}
             </button>
           </div>
         </label>
-
-        {/* Setting Value */}
         <label className="field">
-          <span>
-            {t(
-              'analytics.settingValue',
-              'Setting Value'
-            )}
-          </span>
-
+          <span>{t('analytics.settingValue')}</span>
           <textarea
-            rows={6}
+            rows={4}
             value={value}
-            onChange={(event) =>
-              setValue(event.target.value)
-            }
-            placeholder='true'
-            disabled={busy}
-            style={{
-              font: 'inherit',
-              padding: '0.6rem 0.7rem',
-              borderRadius: 8,
-              border:
-                '1px solid var(--border)',
-              width: '100%',
-              resize: 'vertical',
-            }}
+            onChange={(e) => setValue(e.target.value)}
+            style={{ font: 'inherit', padding: '0.6rem 0.7rem', borderRadius: 8, border: '1px solid var(--border)' }}
           />
         </label>
-
-        {/* Save */}
         <div className="modal-actions">
-          <button
-            type="submit"
-            className="btn btn-primary"
-            disabled={busy}
-          >
-            {busy
-              ? t(
-                  'common.saving',
-                  'Saving...'
-                )
-              : t(
-                  'analytics.saveSetting',
-                  'Save Setting'
-                )}
+          <button type="submit" className="btn btn-primary" disabled={busy}>
+            {t('analytics.saveSetting')}
           </button>
         </div>
       </form>
@@ -284,162 +108,52 @@ function SettingsEditor() {
 
 export default function Analytics() {
   const { t } = useTranslation();
-
   const [data, setData] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    let mounted = true;
-
-    async function loadAnalytics() {
-      setLoading(true);
-      setError('');
-
-      try {
-        const response = await api.get(
-          '/admin/analytics'
-        );
-
-        if (mounted) {
-          setData(response.data);
-        }
-      } catch (err) {
-        if (mounted) {
-          setError(
-            err.response?.data?.message ||
-              t(
-                'errors.generic',
-                'Something went wrong.'
-              )
-          );
-        }
-      } finally {
-        if (mounted) {
-          setLoading(false);
-        }
-      }
-    }
-
-    loadAnalytics();
-
-    return () => {
-      mounted = false;
-    };
+    api
+      .get('/admin/analytics')
+      .then((res) => setData(res.data))
+      .catch((err) => setError(err.response?.data?.message || t('errors.generic')))
+      .finally(() => setLoading(false));
   }, [t]);
 
   return (
     <div className="page">
-      {/* Page Header */}
       <div className="page-header">
-        <h2>
-          {t(
-            'analytics.title',
-            'Analytics'
-          )}
-        </h2>
+        <h2>{t('analytics.title')}</h2>
       </div>
 
-      {/* Error */}
-      {error && (
-        <div className="alert alert-error">
-          {error}
-        </div>
-      )}
+      {error && <div className="alert alert-error">{error}</div>}
 
-      {/* Loading */}
       {loading ? (
-        <p className="muted">
-          {t(
-            'common.loading',
-            'Loading...'
-          )}
-        </p>
+        <p className="muted">{t('common.loading')}</p>
       ) : (
         <>
-          {/* ==================================================
-              TOTALS
-          ================================================== */}
+          {data?.totals && (
+            <div className="stat-grid" style={{ marginBottom: '1.25rem' }}>
+              {Object.entries(data.totals).map(([k, v]) => (
+                <div className="stat-card" key={k}>
+                  <div className="stat-label">{t(`analytics.totals.${k}`, k)}</div>
+                  <div className="stat-value">{v}</div>
+                </div>
+              ))}
+            </div>
+          )}
 
-          {data?.totals &&
-            Object.keys(data.totals).length > 0 && (
-              <div
-                className="stat-grid"
-                style={{
-                  marginBottom: '1.25rem',
-                }}
-              >
-                {Object.entries(
-                  data.totals
-                ).map(([key, value]) => (
-                  <div
-                    className="stat-card"
-                    key={key}
-                  >
-                    <div className="stat-label">
-                      {t(
-                        `analytics.totals.${key}`,
-                        key
-                      )}
-                    </div>
+          {data?.daily && (
+            <div style={{ marginBottom: '1.25rem' }}>
+              <BarChart title={t('analytics.daily')} data={data.daily} labelKey="date" valueKey="value" />
+            </div>
+          )}
 
-                    <div className="stat-value">
-                      {value ?? 0}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-          {/* ==================================================
-              DAILY ANALYTICS
-          ================================================== */}
-
-          {Array.isArray(data?.daily) &&
-            data.daily.length > 0 && (
-              <div
-                style={{
-                  marginBottom: '1.25rem',
-                }}
-              >
-                <BarChart
-                  title={t(
-                    'analytics.daily',
-                    'Daily'
-                  )}
-                  data={data.daily}
-                  labelKey="date"
-                  valueKey="value"
-                />
-              </div>
-            )}
-
-          {/* ==================================================
-              MONTHLY ANALYTICS
-          ================================================== */}
-
-          {Array.isArray(data?.monthly) &&
-            data.monthly.length > 0 && (
-              <div
-                style={{
-                  marginBottom: '1.25rem',
-                }}
-              >
-                <BarChart
-                  title={t(
-                    'analytics.monthly',
-                    'Monthly'
-                  )}
-                  data={data.monthly}
-                  labelKey="month"
-                  valueKey="value"
-                />
-              </div>
-            )}
-
-          {/* ==================================================
-              SETTINGS
-          ================================================== */}
+          {data?.monthly && (
+            <div style={{ marginBottom: '1.25rem' }}>
+              <BarChart title={t('analytics.monthly')} data={data.monthly} labelKey="month" valueKey="value" />
+            </div>
+          )}
 
           <SettingsEditor />
         </>

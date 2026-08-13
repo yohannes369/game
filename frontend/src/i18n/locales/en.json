@@ -9,34 +9,15 @@
     "groups": "Groups",
     "logout": "Log out",
     "lotteries": "Lotteries",
-    "challenges": "Challenges",
-    "payments": "Payments",
-    "withdrawals": "Withdrawals",
     "winners": "Winners",
-    "analytics": "Analytics",
-    "profile": "Profile"
-  },
-  "navbar": {
-    "dashboard": "Dashboard",
-    "lotteries": "Lotteries",
-    "challenges": "Challenges",
-    
-  "user": {
-    "dashboard": {
-      "welcome": "Welcome"
-    }
-  },
-  "lotteries": {
-    "title": "Lotteries"
-  },"payments": "Payments",
     "withdrawals": "Withdrawals",
-    "profile": "Profile",
-    "logout": "Logout",
-    "users": "Users"
+    "payments": "Payments",
+    "analytics": "Analytics"
   },
-  "notifications": {
-    "title": "Notifications",
-    "empty": "No notifications"
+  "language": {
+    "label": "Language",
+    "en": "English",
+    "am": "Amharic"
   },
   "auth": {
     "loginTitle": "Sign in to your account",

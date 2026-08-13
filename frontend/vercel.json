@@ -1,7 +1,0 @@
-# Vercel Frontend Deployment Config
-{
-  "buildCommand": "npm run build",
-  "outputDirectory": "dist",
-  "framework": "vite",
-  "nodeVersion": "18.x"
-}
