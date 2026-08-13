@@ -73,189 +73,273 @@
 //   if (!ctx) throw new Error('useAuth must be used within an AuthProvider');
 //   return ctx;
 // }
-import { createContext, useContext, useState, useCallback, useMemo } from 'react';
-import api from '../api/axios';
-
-const AuthContext = createContext(null);
-
-function readStoredUser() {
-  try {
-    const raw = localStorage.getItem('user');
-    return raw ? JSON.parse(raw) : null;
-  } catch {
-    return null;
-  }
-}
-
-export function AuthProvider({ children }) {
-  const [user, setUser] = useState(readStoredUser);
-  const [loading, setLoading] = useState(false);
-
-
-  const persistSession = useCallback((data) => {
-    localStorage.setItem('accessToken', data.accessToken);
-    localStorage.setItem('refreshToken', data.refreshToken);
-    localStorage.setItem('user', JSON.stringify(data.user));
-
-    setUser(data.user);
-  }, []);
 
 
 
-  const login = useCallback(
-    async (username, password) => {
-      setLoading(true);
+// import { createContext, useContext, useState, useCallback, useMemo } from 'react';
+// import api from '../api/axios';
 
-      try {
-        const { data } = await api.post('/auth/login', {
-          username,
-          password
-        });
+// const AuthContext = createContext(null);
 
-        persistSession(data);
+// function readStoredUser() {
+//   try {
+//     const raw = localStorage.getItem('user');
+//     return raw ? JSON.parse(raw) : null;
+//   } catch {
+//     return null;
+//   }
+// }
 
-        return data.user;
-
-      } finally {
-        setLoading(false);
-      }
-    },
-    [persistSession]
-  );
+// export function AuthProvider({ children }) {
+//   const [user, setUser] = useState(readStoredUser);
+//   const [loading, setLoading] = useState(false);
 
 
+//   const persistSession = useCallback((data) => {
+//     localStorage.setItem('accessToken', data.accessToken);
+//     localStorage.setItem('refreshToken', data.refreshToken);
+//     localStorage.setItem('user', JSON.stringify(data.user));
 
-  const register = useCallback(
-    async (
-      username,
-      password,
-      fullName,
-      location
-    ) => {
-
-      setLoading(true);
-
-      try {
-
-        const { data } = await api.post(
-          '/auth/register',
-          {
-            username,
-            password,
-            fullName,
-            location
-          }
-        );
-
-        return data;
-
-      } finally {
-        setLoading(false);
-      }
-
-    },
-    []
-  );
+//     setUser(data.user);
+//   }, []);
 
 
 
-  const changePassword = useCallback(
-    async (
-      currentPassword,
-      newPassword
-    ) => {
+//   const login = useCallback(
+//     async (username, password) => {
+//       setLoading(true);
 
-      setLoading(true);
+//       try {
+//         const { data } = await api.post('/auth/login', {
+//           username,
+//           password
+//         });
 
-      try {
+//         persistSession(data);
 
-        const { data } = await api.post(
-          '/auth/change-password',
-          {
-            currentPassword,
-            newPassword
-          }
-        );
+//         return data.user;
 
-        return data;
-
-      } finally {
-        setLoading(false);
-      }
-
-    },
-    []
-  );
+//       } finally {
+//         setLoading(false);
+//       }
+//     },
+//     [persistSession]
+//   );
 
 
 
-  const logout = useCallback(async () => {
+//   const register = useCallback(
+//     async (
+//       username,
+//       password,
+//       fullName,
+//       location
+//     ) => {
 
-    const refreshToken = localStorage.getItem('refreshToken');
+//       setLoading(true);
 
-    try {
+//       try {
 
-      await api.post(
-        '/auth/logout',
-        {
-          refreshToken
-        }
-      );
+//         const { data } = await api.post(
+//           '/auth/register',
+//           {
+//             username,
+//             password,
+//             fullName,
+//             location
+//           }
+//         );
 
-    } catch {
-      // ignore logout errors
+//         return data;
+
+//       } finally {
+//         setLoading(false);
+//       }
+
+//     },
+//     []
+//   );
+
+
+
+//   const changePassword = useCallback(
+//     async (
+//       currentPassword,
+//       newPassword
+//     ) => {
+
+//       setLoading(true);
+
+//       try {
+
+//         const { data } = await api.post(
+//           '/auth/change-password',
+//           {
+//             currentPassword,
+//             newPassword
+//           }
+//         );
+
+//         return data;
+
+//       } finally {
+//         setLoading(false);
+//       }
+
+//     },
+//     []
+//   );
+
+
+
+//   const logout = useCallback(async () => {
+
+//     const refreshToken = localStorage.getItem('refreshToken');
+
+//     try {
+
+//       await api.post(
+//         '/auth/logout',
+//         {
+//           refreshToken
+//         }
+//       );
+
+//     } catch {
+//       // ignore logout errors
+//     }
+
+
+//     localStorage.removeItem('accessToken');
+//     localStorage.removeItem('refreshToken');
+//     localStorage.removeItem('user');
+
+//     setUser(null);
+
+//   }, []);
+
+
+
+//   const value = useMemo(
+//     () => ({
+//       user,
+//       loading,
+//       login,
+//       register,
+//       changePassword,
+//       logout,
+//       isAuthenticated: !!user
+//     }),
+//     [
+//       user,
+//       loading,
+//       login,
+//       register,
+//       changePassword,
+//       logout
+//     ]
+//   );
+
+
+//   return (
+//     <AuthContext.Provider value={value}>
+//       {children}
+//     </AuthContext.Provider>
+//   );
+// }
+
+
+
+// export function useAuth() {
+
+//   const ctx = useContext(AuthContext);
+
+//   if (!ctx) {
+//     throw new Error(
+//       'useAuth must be used within an AuthProvider'
+//     );
+//   }
+
+//   return ctx;
+// }
+
+import axios from 'axios';
+
+const API_URL =
+  import.meta.env.VITE_API_URL || 'https://game-qcad.onrender.com';
+
+const api = axios.create({
+  baseURL: API_URL.replace(/\/+$/, ''),
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  timeout: 30000,
+});
+
+// Add access token to authenticated requests
+api.interceptors.request.use(
+  (config) => {
+    const accessToken = localStorage.getItem('accessToken');
+
+    if (accessToken) {
+      config.headers.Authorization = `Bearer ${accessToken}`;
     }
 
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('refreshToken');
-    localStorage.removeItem('user');
+// Handle expired access tokens
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
 
-    setUser(null);
+    // If access token expired, try refreshing it once
+    if (
+      error.response?.status === 401 &&
+      !originalRequest?._retry &&
+      localStorage.getItem('refreshToken')
+    ) {
+      originalRequest._retry = true;
 
-  }, []);
+      try {
+        const refreshToken = localStorage.getItem('refreshToken');
 
+        const response = await axios.post(
+          `${API_URL.replace(/\/+$/, '')}/auth/refresh`,
+          {
+            refreshToken,
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
 
+        const newAccessToken = response.data.accessToken;
 
-  const value = useMemo(
-    () => ({
-      user,
-      loading,
-      login,
-      register,
-      changePassword,
-      logout,
-      isAuthenticated: !!user
-    }),
-    [
-      user,
-      loading,
-      login,
-      register,
-      changePassword,
-      logout
-    ]
-  );
+        if (newAccessToken) {
+          localStorage.setItem('accessToken', newAccessToken);
 
+          originalRequest.headers.Authorization =
+            `Bearer ${newAccessToken}`;
 
-  return (
-    <AuthContext.Provider value={value}>
-      {children}
-    </AuthContext.Provider>
-  );
-}
+          return api(originalRequest);
+        }
+      } catch (refreshError) {
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('user');
 
+        return Promise.reject(refreshError);
+      }
+    }
 
-
-export function useAuth() {
-
-  const ctx = useContext(AuthContext);
-
-  if (!ctx) {
-    throw new Error(
-      'useAuth must be used within an AuthProvider'
-    );
+    return Promise.reject(error);
   }
+);
 
-  return ctx;
-}
+export default api;
