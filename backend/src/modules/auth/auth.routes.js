@@ -101,9 +101,9 @@ const { authenticate } = require('../../middleware/auth.middleware');
 
 const router = express.Router();
 
-// =========================================================
+// =====================================================
 // LOGIN RATE LIMITER
-// =========================================================
+// =====================================================
 
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -115,16 +115,14 @@ const loginLimiter = rateLimit({
   },
 });
 
-// =========================================================
-// VALIDATION RULES
-// =========================================================
+// =====================================================
+// VALIDATION
+// =====================================================
 
 const usernameRule = body('username')
   .trim()
   .isLength({ min: 3, max: 50 })
-  .withMessage(
-    'Username must be between 3 and 50 characters.'
-  )
+  .withMessage('Username must be between 3 and 50 characters.')
   .matches(/^[a-zA-Z0-9_.-]+$/)
   .withMessage(
     'Username may only contain letters, numbers, dots, dashes and underscores.'
@@ -132,13 +130,11 @@ const usernameRule = body('username')
 
 const passwordRule = body('password')
   .isLength({ min: 6 })
-  .withMessage(
-    'Password must be at least 6 characters long.'
-  );
+  .withMessage('Password must be at least 6 characters long.');
 
-// =========================================================
+// =====================================================
 // REGISTER
-// =========================================================
+// =====================================================
 
 router.post(
   '/register',
@@ -161,24 +157,20 @@ router.post(
         'Phone number must be between 9 and 20 characters.'
       )
       .matches(/^[0-9+()\-\s]+$/)
-      .withMessage(
-        'Please enter a valid phone number.'
-      ),
+      .withMessage('Please enter a valid phone number.'),
 
     body('location')
       .optional({ values: 'falsy' })
       .trim()
       .isLength({ max: 150 })
-      .withMessage(
-        'Location cannot exceed 150 characters.'
-      ),
+      .withMessage('Location cannot exceed 150 characters.'),
   ],
   controller.register
 );
 
-// =========================================================
+// =====================================================
 // LOGIN
-// =========================================================
+// =====================================================
 
 router.post(
   '/login',
@@ -193,27 +185,21 @@ router.post(
   controller.login
 );
 
-// =========================================================
-// REFRESH TOKEN
-// =========================================================
+// =====================================================
+// REFRESH
+// =====================================================
 
-router.post(
-  '/refresh',
-  controller.refresh
-);
+router.post('/refresh', controller.refresh);
 
-// =========================================================
+// =====================================================
 // LOGOUT
-// =========================================================
+// =====================================================
 
-router.post(
-  '/logout',
-  controller.logout
-);
+router.post('/logout', controller.logout);
 
-// =========================================================
+// =====================================================
 // CURRENT USER
-// =========================================================
+// =====================================================
 
 router.get(
   '/me',
@@ -221,9 +207,9 @@ router.get(
   controller.me
 );
 
-// =========================================================
+// =====================================================
 // CHANGE PASSWORD
-// =========================================================
+// =====================================================
 
 router.post(
   '/change-password',
@@ -231,9 +217,7 @@ router.post(
   [
     body('currentPassword')
       .notEmpty()
-      .withMessage(
-        'Current password is required.'
-      ),
+      .withMessage('Current password is required.'),
 
     body('newPassword')
       .isLength({ min: 6 })

@@ -363,22 +363,38 @@
 // };
 
 const { pool } = require('../../config/db');
-const { hashPassword, comparePassword } = require('../../utils/password');
+
+const {
+  hashPassword,
+  comparePassword,
+} = require('../../utils/password');
+
 const {
   signAccessToken,
   signRefreshToken,
-  verifyRefreshToken
+  verifyRefreshToken,
 } = require('../../utils/jwt');
+
+// =====================================================
+// HTTP ERROR
+// =====================================================
 
 class HttpError extends Error {
   constructor(status, message) {
     super(message);
     this.status = status;
+    this.name = 'HttpError';
   }
 }
 
+// =====================================================
+// PUBLIC USER
+// =====================================================
+
 function toPublicUser(row) {
-  if (!row) return null;
+  if (!row) {
+    return null;
+  }
 
   return {
     id: row.id,
@@ -388,10 +404,14 @@ function toPublicUser(row) {
     location: row.location,
     role: row.role,
     groupId: row.group_id,
-    isActive: !!row.is_active,
+    isActive: Boolean(row.is_active),
     createdAt: row.created_at,
   };
 }
+
+// =====================================================
+// TOKEN PAYLOAD
+// =====================================================
 
 function buildTokenPayload(user) {
   return {
@@ -402,45 +422,125 @@ function buildTokenPayload(user) {
   };
 }
 
+// =====================================================
+// FIND USER BY USERNAME
+// =====================================================
+
 async function findUserByUsername(username) {
   const [rows] = await pool.query(
-    'SELECT * FROM users WHERE username = ? LIMIT 1',
+    `
+    SELECT *
+    FROM users
+    WHERE username = ?
+    LIMIT 1
+    `,
     [username]
   );
 
   return rows[0] || null;
 }
 
+// =====================================================
+// FIND USER BY ID
+// =====================================================
+
 async function findUserById(id) {
   const [rows] = await pool.query(
-    'SELECT * FROM users WHERE id = ? LIMIT 1',
+    `
+    SELECT *
+    FROM users
+    WHERE id = ?
+    LIMIT 1
+    `,
     [id]
   );
 
   return rows[0] || null;
 }
 
-/**
- * Register normal user account
- */
+// =====================================================
+// REGISTER USER
+// =====================================================
+
 async function registerUser({
   username,
   password,
   fullName,
   phoneNumber,
-  location
+  location,
 }) {
-  const existing = await findUserByUsername(username);
+  // Clean values
+  username = String(username || '').trim();
+  password = String(password || '');
+  fullName = String(fullName || '').trim();
+  phoneNumber = String(phoneNumber || '').trim();
+  location = location
+    ? String(location).trim()
+    : null;
 
-  if (existing) {
+  // Check required fields
+  if (!username) {
+    throw new HttpError(
+      422,
+      'Username is required.'
+    );
+  }
+
+  if (!password) {
+    throw new HttpError(
+      422,
+      'Password is required.'
+    );
+  }
+
+  if (!fullName) {
+    throw new HttpError(
+      422,
+      'Full name is required.'
+    );
+  }
+
+  if (!phoneNumber) {
+    throw new HttpError(
+      422,
+      'Phone number is required.'
+    );
+  }
+
+  // Check username
+  const existingUsername =
+    await findUserByUsername(username);
+
+  if (existingUsername) {
     throw new HttpError(
       409,
       'This username is already taken.'
     );
   }
 
-  const passwordHash = await hashPassword(password);
+  // Check phone number
+  const [existingPhone] = await pool.query(
+    `
+    SELECT id
+    FROM users
+    WHERE phone_number = ?
+    LIMIT 1
+    `,
+    [phoneNumber]
+  );
 
+  if (existingPhone.length > 0) {
+    throw new HttpError(
+      409,
+      'This phone number is already registered.'
+    );
+  }
+
+  // Hash password
+  const passwordHash =
+    await hashPassword(password);
+
+  // Insert user
   const [result] = await pool.query(
     `
     INSERT INTO users
@@ -450,26 +550,45 @@ async function registerUser({
       full_name,
       phone_number,
       location,
-      role
+      role,
+      is_active
     )
-    VALUES (?, ?, ?, ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
     `,
     [
       username,
       passwordHash,
       fullName,
       phoneNumber,
-      location || null,
-      'user'
+      location,
+      'user',
+      1,
     ]
   );
 
-  const created = await findUserById(result.insertId);
+  // Get created user
+  const created =
+    await findUserById(result.insertId);
+
+  if (!created) {
+    throw new HttpError(
+      500,
+      'Account was created but could not be loaded.'
+    );
+  }
 
   return toPublicUser(created);
 }
 
-async function storeRefreshToken(userId, token, expiresAt) {
+// =====================================================
+// STORE REFRESH TOKEN
+// =====================================================
+
+async function storeRefreshToken(
+  userId,
+  token,
+  expiresAt
+) {
   await pool.query(
     `
     INSERT INTO refresh_tokens
@@ -483,19 +602,28 @@ async function storeRefreshToken(userId, token, expiresAt) {
     [
       userId,
       token,
-      expiresAt
+      expiresAt,
     ]
   );
 }
 
-async function issueTokens(user) {
-  const payload = buildTokenPayload(user);
+// =====================================================
+// ISSUE TOKENS
+// =====================================================
 
-  const accessToken = signAccessToken(payload);
-  const refreshToken = signRefreshToken(payload);
+async function issueTokens(user) {
+  const payload =
+    buildTokenPayload(user);
+
+  const accessToken =
+    signAccessToken(payload);
+
+  const refreshToken =
+    signRefreshToken(payload);
 
   const expiresAt = new Date(
-    Date.now() + 7 * 24 * 60 * 60 * 1000
+    Date.now() +
+      7 * 24 * 60 * 60 * 1000
   )
     .toISOString()
     .slice(0, 19)
@@ -509,12 +637,22 @@ async function issueTokens(user) {
 
   return {
     accessToken,
-    refreshToken
+    refreshToken,
   };
 }
 
-async function login({ username, password }) {
-  const user = await findUserByUsername(username);
+// =====================================================
+// LOGIN
+// =====================================================
+
+async function login({
+  username,
+  password,
+}) {
+  const user =
+    await findUserByUsername(
+      username.trim()
+    );
 
   if (!user) {
     throw new HttpError(
@@ -530,10 +668,11 @@ async function login({ username, password }) {
     );
   }
 
-  const passwordMatches = await comparePassword(
-    password,
-    user.password_hash
-  );
+  const passwordMatches =
+    await comparePassword(
+      password,
+      user.password_hash
+    );
 
   if (!passwordMatches) {
     throw new HttpError(
@@ -542,23 +681,26 @@ async function login({ username, password }) {
     );
   }
 
-  const tokens = await issueTokens(user);
+  const tokens =
+    await issueTokens(user);
 
   return {
     user: toPublicUser(user),
-    ...tokens
+    ...tokens,
   };
 }
 
-/**
- * Change logged-in user's password
- */
+// =====================================================
+// CHANGE PASSWORD
+// =====================================================
+
 async function changePassword({
   userId,
   currentPassword,
-  newPassword
+  newPassword,
 }) {
-  const user = await findUserById(userId);
+  const user =
+    await findUserById(userId);
 
   if (!user) {
     throw new HttpError(
@@ -567,10 +709,11 @@ async function changePassword({
     );
   }
 
-  const passwordMatches = await comparePassword(
-    currentPassword,
-    user.password_hash
-  );
+  const passwordMatches =
+    await comparePassword(
+      currentPassword,
+      user.password_hash
+    );
 
   if (!passwordMatches) {
     throw new HttpError(
@@ -579,7 +722,8 @@ async function changePassword({
     );
   }
 
-  const newPasswordHash = await hashPassword(newPassword);
+  const newPasswordHash =
+    await hashPassword(newPassword);
 
   await pool.query(
     `
@@ -589,14 +733,20 @@ async function changePassword({
     `,
     [
       newPasswordHash,
-      userId
+      userId,
     ]
   );
 
   return true;
 }
 
-async function refreshAccessToken(refreshToken) {
+// =====================================================
+// REFRESH ACCESS TOKEN
+// =====================================================
+
+async function refreshAccessToken(
+  refreshToken
+) {
   if (!refreshToken) {
     throw new HttpError(
       400,
@@ -607,7 +757,10 @@ async function refreshAccessToken(refreshToken) {
   let payload;
 
   try {
-    payload = verifyRefreshToken(refreshToken);
+    payload =
+      verifyRefreshToken(
+        refreshToken
+      );
   } catch (err) {
     throw new HttpError(
       401,
@@ -625,7 +778,7 @@ async function refreshAccessToken(refreshToken) {
     `,
     [
       refreshToken,
-      payload.id
+      payload.id,
     ]
   );
 
@@ -636,7 +789,8 @@ async function refreshAccessToken(refreshToken) {
     );
   }
 
-  const user = await findUserById(payload.id);
+  const user =
+    await findUserById(payload.id);
 
   if (!user || !user.is_active) {
     throw new HttpError(
@@ -645,27 +799,45 @@ async function refreshAccessToken(refreshToken) {
     );
   }
 
+  // Rotate refresh token
   await pool.query(
-    'DELETE FROM refresh_tokens WHERE token = ?',
+    `
+    DELETE FROM refresh_tokens
+    WHERE token = ?
+    `,
     [refreshToken]
   );
 
-  const tokens = await issueTokens(user);
+  const tokens =
+    await issueTokens(user);
 
   return {
     user: toPublicUser(user),
-    ...tokens
+    ...tokens,
   };
 }
 
+// =====================================================
+// LOGOUT
+// =====================================================
+
 async function logout(refreshToken) {
-  if (!refreshToken) return;
+  if (!refreshToken) {
+    return;
+  }
 
   await pool.query(
-    'DELETE FROM refresh_tokens WHERE token = ?',
+    `
+    DELETE FROM refresh_tokens
+    WHERE token = ?
+    `,
     [refreshToken]
   );
 }
+
+// =====================================================
+// EXPORT
+// =====================================================
 
 module.exports = {
   HttpError,

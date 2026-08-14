@@ -277,7 +277,6 @@
 //   changePassword
 
 // };
-
 const { validationResult } = require('express-validator');
 const authService = require('./auth.service');
 
@@ -285,14 +284,16 @@ function handleValidation(req) {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
-    const err = new authService.HttpError(
+    throw new authService.HttpError(
       422,
       errors.array()[0].msg
     );
-
-    throw err;
   }
 }
+
+// =====================================================
+// REGISTER
+// =====================================================
 
 async function register(req, res, next) {
   try {
@@ -303,7 +304,7 @@ async function register(req, res, next) {
       password,
       fullName,
       phoneNumber,
-      location
+      location,
     } = req.body;
 
     const user = await authService.registerUser({
@@ -311,18 +312,21 @@ async function register(req, res, next) {
       password,
       fullName,
       phoneNumber,
-      location
+      location,
     });
 
     res.status(201).json({
       message: 'Account created successfully.',
-      user
+      user,
     });
-
   } catch (err) {
     next(err);
   }
 }
+
+// =====================================================
+// LOGIN
+// =====================================================
 
 async function login(req, res, next) {
   try {
@@ -330,26 +334,27 @@ async function login(req, res, next) {
 
     const {
       username,
-      password
+      password,
     } = req.body;
 
     const result = await authService.login({
       username,
-      password
+      password,
     });
 
     res.json(result);
-
   } catch (err) {
     next(err);
   }
 }
 
+// =====================================================
+// REFRESH
+// =====================================================
+
 async function refresh(req, res, next) {
   try {
-    const {
-      refreshToken
-    } = req.body;
+    const { refreshToken } = req.body;
 
     const result =
       await authService.refreshAccessToken(
@@ -357,52 +362,55 @@ async function refresh(req, res, next) {
       );
 
     res.json(result);
-
   } catch (err) {
     next(err);
   }
 }
+
+// =====================================================
+// LOGOUT
+// =====================================================
 
 async function logout(req, res, next) {
   try {
-    const {
-      refreshToken
-    } = req.body;
+    const { refreshToken } = req.body;
 
-    await authService.logout(
-      refreshToken
-    );
+    await authService.logout(refreshToken);
 
     res.json({
-      message: 'Logged out successfully.'
+      message: 'Logged out successfully.',
     });
-
   } catch (err) {
     next(err);
   }
 }
+
+// =====================================================
+// CURRENT USER
+// =====================================================
 
 async function me(req, res, next) {
   try {
     const user =
-      await authService.findUserById(
-        req.user.id
-      );
+      await authService.findUserById(req.user.id);
 
     if (!user) {
       return res.status(404).json({
-        message: 'User not found.'
+        message: 'User not found.',
       });
     }
 
     res.json({
-      user: authService.toPublicUser(user)
+      user: authService.toPublicUser(user),
     });
-
   } catch (err) {
     next(err);
   }
 }
+
+// =====================================================
+// CHANGE PASSWORD
+// =====================================================
 
 async function changePassword(req, res, next) {
   try {
@@ -410,19 +418,18 @@ async function changePassword(req, res, next) {
 
     const {
       currentPassword,
-      newPassword
+      newPassword,
     } = req.body;
 
     await authService.changePassword({
       userId: req.user.id,
       currentPassword,
-      newPassword
+      newPassword,
     });
 
     res.json({
-      message: 'Password changed successfully.'
+      message: 'Password changed successfully.',
     });
-
   } catch (err) {
     next(err);
   }
@@ -434,5 +441,5 @@ module.exports = {
   refresh,
   logout,
   me,
-  changePassword
+  changePassword,
 };
